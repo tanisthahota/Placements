@@ -1113,9 +1113,66 @@ def rat_in_maze(maze):
     return []
 ```
 
-## 8. Advanced Graph Algorithms
 
-### 8.1 Tarjan’s Algorithm (Strongly Connected Components)
+## 8. Graph Algorithms
+
+### 8.1 BFS
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    order = []
+
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            order.append(node)   # record order
+            visited.add(node)
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)
+
+    return order
+```
+## 8.2 DFS
+#### Recursively
+```python
+def dfs(graph, node, visited=None, order=None):
+    if visited is None:
+        visited = set()
+    if order is None:
+        order = []
+
+    if node not in visited:
+        order.append(node)   # record order
+        visited.add(node)
+        for neighbor in graph[node]:
+            dfs(graph, neighbor, visited, order)
+
+    return order
+
+```
+#### Iteratively with stacks
+```python
+def dfs_iterative(graph, start):
+    visited = set()
+    stack = [start]
+    order = []
+
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            order.append(node)   # record order
+            visited.add(node)
+            # reversed ensures same order as recursive DFS
+            stack.extend(reversed(graph[node]))
+
+    return order
+	```
+
+### 8.3 Tarjan’s Algorithm (Strongly Connected Components)
 ```python
 def tarjans_scc(graph):
     index = 0
@@ -1152,7 +1209,7 @@ def tarjans_scc(graph):
     
     return sccs
 ```
-### 8.2 Kosaraju’s Algorithm
+### 8.4 Kosaraju’s Algorithm
 ```python
 def kosaraju_scc(graph):
     visited = set()
@@ -1194,7 +1251,7 @@ def kosaraju_scc(graph):
     return sccs
 ```
 
-### 8.3 Articulation Points (Tarjan’s Algorithm)
+### 8.5 Articulation Points (Tarjan’s Algorithm)
 ```python
 def articulation_points(graph):
     time = 0
