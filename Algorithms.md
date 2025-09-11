@@ -1,159 +1,891 @@
-# 1. Searching Algorithms
-### 1.1 Linear Search
+# Algorithms - Comprehensive Python Reference
 
-	def linearsearch(arr,target):
-		n= len(arr)-1
-		for i in range(n):
-			if arr[i]== target:
-				return 1
-			else:
-				return -1
+## 1. Searching Algorithms
+
+### 1.1 Linear Search
+*Time Complexity*: O(n)  
+*Space Complexity*: O(1)
+
+```python
+def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i  
+    return -1  
+```
 
 ### 1.2 Binary Search
+*Time Complexity*: O(log n)  
+*Space Complexity*: O(1)  
+*Prerequisite*: Array must be sorted
 
-	def binarysearch(arr, target):
-		n = len(arr)+1
-		right , left =0
-		for i in range (0,n):
-			mid= (right+left) //2
-			if arr[mid] == target:
-				return mid
-			elif arr[mid] > target:
-				left= mid+1
-			else:
-				right = mid -1
-		return -1 
+```python
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+```
+#### Recursive version
+```python
 
+def binary_search_recursive(arr, target, left=0, right=None):
+    if right is None:
+        right = len(arr) - 1
+    
+    if left > right:
+        return -1
+    
+    mid = (left + right) // 2
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        return binary_search_recursive(arr, target, mid + 1, right)
+    else:
+        return binary_search_recursive(arr, target, left, mid - 1)
 
-# 2.Sorting Algorithms
+```
+
+---
+
+## 2. Sorting Algorithms
 
 ### 2.1 Bubble Sort
-def bubblesort(arr):
-	n = len(arr)
-	for i in range(n):
-		for j in range(i,n):	
-			if arr[i]>arr[j]:
-				arr[i], arr[j] = arr[j], arr[i]
+*Time Complexity*: O(n²)  
+*Space Complexity*: O(1)
+
+```python
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:  
+            break
+    return arr
+```
 
 ### 2.2 Selection Sort
-	def selectionsort(arr):
-		n = len(arr)
-		for i in range(n):
-			minindex = i
-			for j in range(i,n):
-				if arr[j] < arr[i]:
-					minindex = j
-				
-			arr[i], arr[minindex]= arr[minindex], arr[i]
-		return arr
+*Time Complexity*: O(n²)  
+*Space Complexity*: O(1)
 
-
-### 2.3 Quick Sort
-
-	def quicksort(arr):
-		if len(arr) <= 1:
-			return arr
-		pivot = arr[len(arr)//2]
-		left = [x for x in arr if x<pivot]
-		mid = [x for x in arr if x==pivot]
-		right = [ x for x in arr if x > pivot]
-		return quicksort(left)+ middle+ quicksort(right)
-
-
-### 2.4 Merge Sort
-
-	def mergesort(arr):
-		if len(arr) <=1:
-			return arr
-			
-		middle = len(arr) //2
-		left = mergesort(arr[:mid])
-		right = mergesort(arr[mid:])
-		return merge(left,right)
-
-	def merge(left, right):
-		result = []
-		i = j = 0 
-		while i < len(left) and j < len(right): 
-			if left[i] < right[j]:
-				result.append(left[i]) 
-				i += 1
-			else:
-				result.append(right[j]) 
-				j += 1 
-		result.extend(left[i:])
-		result.extend(right[j:]) 
-		return result
-
-### 2.5 Heap Sort
-
-
-# 3. Recursion & Divide and Conquer
-
-### 3.1 Tower of Hanoi
-	
-
-### 3.2 Binary Exponentiation (Fast Power)
-
-### 3.3 Karatsuba’s Algorithm (Fast Multiplication)
-
-### 3.4 Strassen’s Matrix Multiplication
-
-
-# 4. Greedy Algorithms
-
-### 4.1 Activity Selection
-
-Fractional Knapsack
-
-Huffman Coding
-
-Kruskal’s Algorithm (MST)
-
-Prim’s Algorithm (MST)
-
-Dijkstra’s Algorithm (Shortest Path)
-
-Job Scheduling (Greedy Scheduling)
-
-
-
-
-
-# 3. Graph Algorithms 
-### 3.1 Breadth First Search (BFS)
+```python
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
 ```
 
+### 2.3 Insertion Sort
+*Time Complexity*: O(n²)  
+*Space Complexity*: O(1)
+
+```python
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
 ```
 
-### 3.2 Depth First Search (DFS)
+### 2.4 Quick Sort
+*Time Complexity*: O(n log n) average, O(n²) worst  
+*Space Complexity*: O(log n)
 
+```python
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    return quick_sort(left) + middle + quick_sort(right)
 ```
 
+#### In-place version
+``` python
+def quick_sort_inplace(arr, low=0, high=None):
+    if high is None:
+        high = len(arr) - 1
+    
+    if low < high:
+        pi = partition(arr, low, high)
+        quick_sort_inplace(arr, low, pi - 1)
+        quick_sort_inplace(arr, pi + 1, high)
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
 ```
 
-Topological Sort
+### 2.5 Merge Sort
+*Time Complexity*: O(n log n)  
+*Space Complexity*: O(n)
 
-Bellman-Ford Algorithm
+```python
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    
+    return merge(left, right)
 
-Floyd-Warshall Algorithm
+def merge(left, right):
+    result = []
+    i = j = 0
+    
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+```
 
-Johnson’s Algorithm
+### 2.6 Heap Sort
+*Time Complexity*: O(n log n)  
+*Space Complexity*: O(1)
 
-A* Search Algorithm
+```python
+def heap_sort(arr):
+    n = len(arr)
+    
+    
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+    
+    
+    for i in range(n - 1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+    
+    return arr
 
-Tarjan’s Algorithm (SCCs)
+def heapify(arr, n, i):
+    largest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+    
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+    
+    if right < n and arr[right] > arr[largest]:
+        largest = right
+    
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+```
 
-Kosaraju’s Algorithm (SCCs)
 
-Edmonds-Karp / Ford-Fulkerson (Max Flow)
+---
 
-Dinic’s Algorithm (Max Flow)
+## 3. Graph Algorithms
 
-Union-Find / Disjoint Set Union (DSU)
+### 3.1 Depth-First Search (DFS)
+*Time Complexity*: O(V + E)  
+*Space Complexity*: O(V)
 
-# dp
+```python
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    
+    visited.add(start)
+    print(start, end=' ')
+    
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+    
+    return visited
+```
+#### Iterative version
+```python
+def dfs_iterative(graph, start):
+    visited = set()
+    stack = [start]
+    
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            visited.add(node)
+            print(node, end=' ')
+            stack.extend(reversed(graph[node]))  
+    
+    return visited
+```
 
+### 3.2 Breadth-First Search (BFS)
+*Time Complexity*: O(V + E)  
+*Space Complexity*: O(V)
 
-# Mathematical Algorithms
-## Euclids Algorithm
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    
+    while queue:
+        node = queue.popleft()
+        print(node, end=' ')
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    
+    return visited
+```
+
+### 3.3 Dijkstra's Algorithm
+*Time Complexity*: O((V + E) log V)  
+*Space Complexity*: O(V)
+
+```python
+import heapq
+
+def dijkstra(graph, start):
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    pq = [(0, start)]
+    visited = set()
+    
+    while pq:
+        current_dist, current_node = heapq.heappop(pq)
+        
+        if current_node in visited:
+            continue
+        
+        visited.add(current_node)
+        
+        for neighbor, weight in graph[current_node].items():
+            distance = current_dist + weight
+            
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(pq, (distance, neighbor))
+    
+    return distances
+```
+
+### 3.4 Floyd-Warshall Algorithm
+*Time Complexity*: O(V³)  
+*Space Complexity*: O(V²)
+
+```python
+def floyd_warshall(graph):
+    nodes = list(graph.keys())
+    n = len(nodes)
+    
+    # Initialize distance matrix
+    dist = [[float('inf')] * n for _ in range(n)]
+    
+    # Set distance from node to itself as 0
+    for i in range(n):
+        dist[i][i] = 0
+    
+    # Fill initial distances
+    for i, node1 in enumerate(nodes):
+        for j, node2 in enumerate(nodes):
+            if node2 in graph[node1]:
+                dist[i][j] = graph[node1][node2]
+    
+    # Floyd-Warshall algorithm
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    
+    return dist, nodes
+```
+
+### 3.5 Bellman-Ford Algorithm
+*Time Complexity*: O(VE)  
+*Space Complexity*: O(V)
+
+```python
+def bellman_ford(graph, start):
+    # Initialize distances
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    
+    # Get all edges
+    edges = []
+    for u in graph:
+        for v, weight in graph[u].items():
+            edges.append((u, v, weight))
+    
+    # Relax edges V-1 times
+    for _ in range(len(graph) - 1):
+        for u, v, weight in edges:
+            if distances[u] != float('inf') and distances[u] + weight < distances[v]:
+                distances[v] = distances[u] + weight
+    
+    # Check for negative cycles
+    for u, v, weight in edges:
+        if distances[u] != float('inf') and distances[u] + weight < distances[v]:
+            return None  # Negative cycle detected
+    
+    return distances
+```
+
+### 3.6 Topological Sort
+*Time Complexity*: O(V + E)  
+*Space Complexity*: O(V)
+
+```python
+def topological_sort_dfs(graph):
+    visited = set()
+    stack = []
+    
+    def dfs_util(node):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                dfs_util(neighbor)
+        stack.append(node)
+    
+    for node in graph:
+        if node not in visited:
+            dfs_util(node)
+    
+    return stack[::-1]  # Reverse to get correct order
+
+# Kahn's Algorithm (using in-degree)
+def topological_sort_kahn(graph):
+    in_degree = {node: 0 for node in graph}
+    
+    # Calculate in-degrees
+    for node in graph:
+        for neighbor in graph[node]:
+            in_degree[neighbor] += 1
+    
+    # Find nodes with no incoming edges
+    queue = deque([node for node in in_degree if in_degree[node] == 0])
+    result = []
+    
+    while queue:
+        node = queue.popleft()
+        result.append(node)
+        
+        for neighbor in graph[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    return result if len(result) == len(graph) else []  # Check for cycles
+```
+
+### 3.7 Minimum Spanning Tree - Kruskal's Algorithm
+*Time Complexity*: O(E log E)  
+*Space Complexity*: O(V)
+
+```python
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py:
+            return False
+        if self.rank[px] < self.rank[py]:
+            px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]:
+            self.rank[px] += 1
+        return True
+
+def kruskal_mst(n, edges):
+    # edges: [(weight, u, v), ...]
+    edges.sort()  # Sort by weight
+    uf = UnionFind(n)
+    mst = []
+    total_weight = 0
+    
+    for weight, u, v in edges:
+        if uf.union(u, v):
+            mst.append((u, v, weight))
+            total_weight += weight
+            if len(mst) == n - 1:
+                break
+    
+    return mst, total_weight
+```
+
+### 3.8 Minimum Spanning Tree - Prim's Algorithm
+*Time Complexity*: O(E log V)  
+*Space Complexity*: O(V)
+
+```python
+def prim_mst(graph):
+    if not graph:
+        return [], 0
+    
+    start = next(iter(graph))
+    mst = []
+    visited = {start}
+    total_weight = 0
+    
+    # Priority queue: (weight, u, v)
+    edges = [(weight, start, neighbor) for neighbor, weight in graph[start].items()]
+    heapq.heapify(edges)
+    
+    while edges and len(visited) < len(graph):
+        weight, u, v = heapq.heappop(edges)
+        
+        if v in visited:
+            continue
+        
+        visited.add(v)
+        mst.append((u, v, weight))
+        total_weight += weight
+        
+        # Add new edges from v
+        for neighbor, edge_weight in graph[v].items():
+            if neighbor not in visited:
+                heapq.heappush(edges, (edge_weight, v, neighbor))
+    
+    return mst, total_weight
+```
+
+---
+
+## 4. Dynamic Programming
+
+### 4.1 Fibonacci Sequence
+*Time Complexity*: O(n)  
+*Space Complexity*: O(n) for memoization, O(1) for bottom-up
+
+```python
+# Memoization (Top-down)
+def fibonacci_memo(n, memo={}):
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)
+    return memo[n]
+
+# Tabulation (Bottom-up)
+def fibonacci_tab(n):
+    if n <= 1:
+        return n
+    
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    
+    for i in range(2, n + 1):
+        dp[i] = dp[i-1] + dp[i-2]
+    
+    return dp[n]
+
+# Space optimized
+def fibonacci_optimized(n):
+    if n <= 1:
+        return n
+    
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    
+    return b
+```
+
+### 4.2 Longest Common Subsequence (LCS)
+*Time Complexity*: O(mn)  
+*Space Complexity*: O(mn)
+
+```python
+def lcs(text1, text2):
+    m, n = len(text1), len(text2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if text1[i-1] == text2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    
+    return dp[m][n]
+
+# Space optimized version
+def lcs_optimized(text1, text2):
+    m, n = len(text1), len(text2)
+    prev = [0] * (n + 1)
+    curr = [0] * (n + 1)
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if text1[i-1] == text2[j-1]:
+                curr[j] = prev[j-1] + 1
+            else:
+                curr[j] = max(prev[j], curr[j-1])
+        prev, curr = curr, prev
+    
+    return prev[n]
+```
+
+### 4.3 Knapsack Problem (0/1)
+*Time Complexity*: O(nW)  
+*Space Complexity*: O(nW)
+
+```python
+def knapsack_01(weights, values, capacity):
+    n = len(weights)
+    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+    
+    for i in range(1, n + 1):
+        for w in range(1, capacity + 1):
+            if weights[i-1] <= w:
+                dp[i][w] = max(
+                    dp[i-1][w],  # Don't take item
+                    dp[i-1][w - weights[i-1]] + values[i-1]  # Take item
+                )
+            else:
+                dp[i][w] = dp[i-1][w]
+    
+    return dp[n][capacity]
+
+# Space optimized version
+def knapsack_01_optimized(weights, values, capacity):
+    dp = [0] * (capacity + 1)
+    
+    for i in range(len(weights)):
+        for w in range(capacity, weights[i] - 1, -1):
+            dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+    
+    return dp[capacity]
+```
+
+### 4.4 Longest Increasing Subsequence (LIS)
+*Time Complexity*: O(n²) for DP, O(n log n) for binary search  
+*Space Complexity*: O(n)
+
+```python
+# DP approach
+def lis_dp(nums):
+    if not nums:
+        return 0
+    
+    n = len(nums)
+    dp = [1] * n
+    
+    for i in range(1, n):
+        for j in range(i):
+            if nums[i] > nums[j]:
+                dp[i] = max(dp[i], dp[j] + 1)
+    
+    return max(dp)
+
+# Binary search approach (more efficient)
+def lis_binary_search(nums):
+    if not nums:
+        return 0
+    
+    tails = []
+    
+    for num in nums:
+        left, right = 0, len(tails)
+        while left < right:
+            mid = (left + right) // 2
+            if tails[mid] < num:
+                left = mid + 1
+            else:
+                right = mid
+        
+        if left == len(tails):
+            tails.append(num)
+        else:
+            tails[left] = num
+    
+    return len(tails)
+```
+
+### 4.5 Edit Distance (Levenshtein Distance)
+*Time Complexity*: O(mn)  
+*Space Complexity*: O(mn)
+
+```python
+def edit_distance(word1, word2):
+    m, n = len(word1), len(word2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    # Initialize base cases
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if word1[i-1] == word2[j-1]:
+                dp[i][j] = dp[i-1][j-1]
+            else:
+                dp[i][j] = 1 + min(
+                    dp[i-1][j],      # deletion
+                    dp[i][j-1],      # insertion
+                    dp[i-1][j-1]     # substitution
+                )
+    
+    return dp[m][n]
+```
+
+### 4.6 Coin Change Problem
+*Time Complexity*: O(amount × coins)  
+*Space Complexity*: O(amount)
+
+```python
+def coin_change(coins, amount):
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+    
+    for coin in coins:
+        for i in range(coin, amount + 1):
+            dp[i] = min(dp[i], dp[i - coin] + 1)
+    
+    return dp[amount] if dp[amount] != float('inf') else -1
+
+# Count ways to make change
+def coin_change_ways(coins, amount):
+    dp = [0] * (amount + 1)
+    dp[0] = 1
+    
+    for coin in coins:
+        for i in range(coin, amount + 1):
+            dp[i] += dp[i - coin]
+    
+    return dp[amount]
+```
+
+---
+
+## 5. Tree Algorithms
+
+### 5.1 Binary Tree Traversals
+
+```python
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+# Inorder (Left, Root, Right)
+def inorder_traversal(root):
+    result = []
+    if root:
+        result.extend(inorder_traversal(root.left))
+        result.append(root.val)
+        result.extend(inorder_traversal(root.right))
+    return result
+
+# Preorder (Root, Left, Right)
+def preorder_traversal(root):
+    result = []
+    if root:
+        result.append(root.val)
+        result.extend(preorder_traversal(root.left))
+        result.extend(preorder_traversal(root.right))
+    return result
+
+# Postorder (Left, Right, Root)
+def postorder_traversal(root):
+    result = []
+    if root:
+        result.extend(postorder_traversal(root.left))
+        result.extend(postorder_traversal(root.right))
+        result.append(root.val)
+    return result
+
+# Level Order (BFS)
+def level_order_traversal(root):
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        node = queue.popleft()
+        result.append(node.val)
+        
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+    
+    return result
+
+# Iterative Inorder
+def inorder_iterative(root):
+    result = []
+    stack = []
+    current = root
+    
+    while stack or current:
+        while current:
+            stack.append(current)
+            current = current.left
+        
+        current = stack.pop()
+        result.append(current.val)
+        current = current.right
+    
+    return result
+```
+
+### 5.2 Binary Search Tree Operations
+
+```python
+class BST:
+    def __init__(self):
+        self.root = None
+    
+    def insert(self, val):
+        self.root = self._insert_recursive(self.root, val)
+    
+    def _insert_recursive(self, node, val):
+        if not node:
+            return TreeNode(val)
+        
+        if val < node.val:
+            node.left = self._insert_recursive(node.left, val)
+        else:
+            node.right = self._insert_recursive(node.right, val)
+        
+        return node
+    
+    def search(self, val):
+        return self._search_recursive(self.root, val)
+    
+    def _search_recursive(self, node, val):
+        if not node or node.val == val:
+            return node
+        
+        if val < node.val:
+            return self._search_recursive(node.left, val)
+        return self._search_recursive(node.right, val)
+    
+    def delete(self, val):
+        self.root = self._delete_recursive(self.root, val)
+    
+    def _delete_recursive(self, node, val):
+        if not node:
+            return node
+        
+        if val < node.val:
+            node.left = self._delete_recursive(node.left, val)
+        elif val > node.val:
+            node.right = self._delete_recursive(node.right, val)
+        else:
+            # Node to be deleted found
+            if not node.left:
+                return node.right
+            elif not node.right:
+                return node.left
+            
+            # Node has two children
+            min_larger_node = self._find_min(node.right)
+            node.val = min_larger_node.val
+            node.right = self._delete_recursive(node.right, min_larger_node.val)
+        
+        return node
+    
+    def _find_min(self, node):
+        while node.left:
+            node = node.left
+        return node
+```
+
+### 5.3 Tree Height and Diameter
+
+```python
+def max_depth(root):
+    if not root:
+        return 0
+    return 1 + max(max_depth(root.left), max_depth(root.right))
+
+def diameter_of_tree(root):
+    def helper(node):
+        if not node:
+            return 0, 0  # (height, diameter)
+        
+        left_height, left_diameter = helper(node.left)
+        right_height, right_diameter = helper(node.right)
+        
+        current_height = 1 + max(left_height, right_height)
+        current_diameter = max(
+            left_diameter,
+            right_diameter,
+            left_height + right_height
+        )
+        
+        return current_height, current_diameter
+    
+    return helper(root)[1]
+```
+
+### 5.4 Lowest Common Ancestor (LCA)
+
+```python
+def lca_binary_tree(root, p, q):
+    if not root or root == p or root == q:
+        return root
+    
+    left = lca_binary_tree(root.left, p, q)
+    right = lca_binary_tree(root.right, p, q)
+    
+    if left and right:
+        return root
+    return left if left else right
+
+def lca_bst(root, p, q):
