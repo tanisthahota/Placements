@@ -505,7 +505,7 @@ def prim_mst(graph):
 *Space Complexity*: O(n) for memoization, O(1) for bottom-up
 
 ```python
-# Memoization (Top-down)
+# Memoization: Top-down
 def fibonacci_memo(n, memo={}):
     if n in memo:
         return memo[n]
@@ -514,7 +514,7 @@ def fibonacci_memo(n, memo={}):
     memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)
     return memo[n]
 
-# Tabulation (Bottom-up)
+# Tabulation: Bottom-up
 def fibonacci_tab(n):
     if n <= 1:
         return n
@@ -889,3 +889,344 @@ def lca_binary_tree(root, p, q):
     return left if left else right
 
 def lca_bst(root, p, q):
+    if not root:
+        return None
+    
+    if p.val < root.val and q.val < root.val:
+        return lca_bst(root.left, p, q)
+    elif p.val > root.val and q.val > root.val:
+        return lca_bst(root.right, p, q)
+    else:
+        return root
+```
+### 5.5 Check if Balanced Tree
+```python
+def is_balanced(root):
+    def check(node):
+        if not node:
+            return 0, True
+        left_height, left_bal = check(node.left)
+        right_height, right_bal = check(node.right)
+        balanced = left_bal and right_bal and abs(left_height - right_height) <= 1
+        return 1 + max(left_height, right_height), balanced
+    
+    return check(root)[1]
+```
+### 5.6 Maximum Path Sum in Binary Tree
+```python
+def max_path_sum(root):
+    max_sum = float('-inf')
+    
+    def helper(node):
+        nonlocal max_sum
+        if not node:
+            return 0
+        left = max(helper(node.left), 0)
+        right = max(helper(node.right), 0)
+        max_sum = max(max_sum, node.val + left + right)
+        return node.val + max(left, right)
+    
+    helper(root)
+    return max_sum
+```
+### 5.7 Serialize and Deserialize Binary Tree
+```python
+class Codec:
+    def serialize(self, root):
+        if not root:
+            return "N"
+        return f"{root.val},{self.serialize(root.left)},{self.serialize(root.right)}"
+    
+    def deserialize(self, data):
+        values = iter(data.split(","))
+        
+        def build():
+            val = next(values)
+            if val == "N":
+                return None
+            node = TreeNode(int(val))
+            node.left = build()
+            node.right = build()
+            return node
+        
+        return build()
+```
+---
+
+## 6 Greedy Algorithm
+
+### 6.1  Activity Selection Problem
+``` python
+def activity_selection(activities):
+    activities.sort(key=lambda x: x[1])  # sort by finish time
+    result = [activities[0]]
+    last_finish = activities[0][1]
+    
+    for start, finish in activities[1:]:
+        if start >= last_finish:
+            result.append((start, finish))
+            last_finish = finish
+    
+    return result
+```
+### 6.2 Huffman Coding
+``` python
+import heapq
+
+class HuffmanNode:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+    
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def huffman_encoding(chars, freqs):
+    heap = [HuffmanNode(c, f) for c, f in zip(chars, freqs)]
+    heapq.heapify(heap)
+    
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+        merged = HuffmanNode(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+    
+    root = heap[0]
+    codes = {}
+    
+    def build_codes(node, code=""):
+        if node:
+            if node.char:
+                codes[node.char] = code
+            build_codes(node.left, code + "0")
+            build_codes(node.right, code + "1")
+    
+    build_codes(root)
+    return codes
+```
+### 6.3 Fractional Knapsack
+``` python
+def fractional_knapsack(weights, values, capacity):
+    items = sorted(zip(weights, values), key=lambda x: x[1]/x[0], reverse=True)
+    total_value = 0
+    
+    for w, v in items:
+        if capacity >= w:
+            capacity -= w
+            total_value += v
+        else:
+            total_value += v * (capacity / w)
+            break
+    
+    return total_value
+```
+--- 
+
+## 7. Backtracking Algorithms
+### 7.1  N-Queens Problem
+``` python
+def solve_n_queens(n):
+    board = [["."] * n for _ in range(n)]
+    solutions = []
+    
+    def is_safe(row, col):
+        for r in range(row):
+            if board[r][col] == "Q":
+                return False
+            if col - (row - r) >= 0 and board[r][col - (row - r)] == "Q":
+                return False
+            if col + (row - r) < n and board[r][col + (row - r)] == "Q":
+                return False
+        return True
+    
+    def backtrack(row):
+        if row == n:
+            solutions.append(["".join(r) for r in board])
+            return
+        for col in range(n):
+            if is_safe(row, col):
+                board[row][col] = "Q"
+                backtrack(row + 1)
+                board[row][col] = "."
+    
+    backtrack(0)
+    return solutions
+```
+### 7.2 Sudoku Solver
+``` python
+def solve_sudoku(board):
+    def is_valid(r, c, num):
+        for i in range(9):
+            if board[r][i] == num or board[i][c] == num:
+                return False
+        start_r, start_c = 3 * (r // 3), 3 * (c // 3)
+        for i in range(start_r, start_r + 3):
+            for j in range(start_c, start_c + 3):
+                if board[i][j] == num:
+                    return False
+        return True
+    
+    def solve():
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == ".":
+                    for num in map(str, range(1, 10)):
+                        if is_valid(r, c, num):
+                            board[r][c] = num
+                            if solve():
+                                return True
+                            board[r][c] = "."
+                    return False
+        return True
+    
+    solve()
+    return board
+```
+### 7.3 Rat in a Maze
+``` python
+def rat_in_maze(maze):
+    n = len(maze)
+    path = []
+    
+    def solve(x, y):
+        if x == n-1 and y == n-1 and maze[x][y] == 1:
+            path.append((x, y))
+            return True
+        
+        if 0 <= x < n and 0 <= y < n and maze[x][y] == 1:
+            path.append((x, y))
+            maze[x][y] = -1  # mark visited
+            
+            if solve(x+1, y) or solve(x, y+1) or solve(x-1, y) or solve(x, y-1):
+                return True
+            
+            path.pop()
+            maze[x][y] = 1
+        return False
+    
+    if solve(0, 0):
+        return path
+    return []
+```
+--- 
+## 8. Advanced Graph Algorithms
+
+### 8.1 Tarjan’s Algorithm (Strongly Connected Components)
+```python
+def tarjans_scc(graph):
+    index = 0
+    stack, indices, lowlink, on_stack, sccs = [], {}, {}, set(), []
+    
+    def strongconnect(v):
+        nonlocal index
+        indices[v] = index
+        lowlink[v] = index
+        index += 1
+        stack.append(v)
+        on_stack.add(v)
+        
+        for w in graph[v]:
+            if w not in indices:
+                strongconnect(w)
+                lowlink[v] = min(lowlink[v], lowlink[w])
+            elif w in on_stack:
+                lowlink[v] = min(lowlink[v], indices[w])
+        
+        if lowlink[v] == indices[v]:
+            scc = []
+            while True:
+                w = stack.pop()
+                on_stack.remove(w)
+                scc.append(w)
+                if w == v:
+                    break
+            sccs.append(scc)
+    
+    for v in graph:
+        if v not in indices:
+            strongconnect(v)
+    
+    return sccs
+```
+### 8.2 Kosaraju’s Algorithm
+```python
+def kosaraju_scc(graph):
+    visited = set()
+    stack = []
+    
+    def dfs(v):
+        visited.add(v)
+        for nei in graph[v]:
+            if nei not in visited:
+                dfs(nei)
+        stack.append(v)
+    
+    for v in graph:
+        if v not in visited:
+            dfs(v)
+    
+    rev_graph = {v: [] for v in graph}
+    for u in graph:
+        for v in graph[u]:
+            rev_graph[v].append(u)
+    
+    visited.clear()
+    sccs = []
+    
+    def dfs_rev(v, comp):
+        visited.add(v)
+        comp.append(v)
+        for nei in rev_graph[v]:
+            if nei not in visited:
+                dfs_rev(nei, comp)
+    
+    while stack:
+        v = stack.pop()
+        if v not in visited:
+            comp = []
+            dfs_rev(v, comp)
+            sccs.append(comp)
+    
+    return sccs
+```
+
+### 8.3 Articulation Points (Tarjan’s Algorithm)
+```python
+def articulation_points(graph):
+    time = 0
+    disc = {}
+    low = {}
+    parent = {}
+    ap = set()
+    
+    def dfs(u):
+        nonlocal time
+        children = 0
+        disc[u] = low[u] = time
+        time += 1
+        
+        for v in graph[u]:
+            if v not in disc:
+                parent[v] = u
+                children += 1
+                dfs(v)
+                low[u] = min(low[u], low[v])
+                
+                if parent.get(u) is None and children > 1:
+                    ap.add(u)
+                if parent.get(u) is not None and low[v] >= disc[u]:
+                    ap.add(u)
+            elif v != parent.get(u):
+                low[u] = min(low[u], disc[v])
+    
+    for u in graph:
+        if u not in disc:
+            dfs(u)
+    
+    return ap
+```
+
