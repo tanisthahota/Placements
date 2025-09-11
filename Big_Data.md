@@ -1,8 +1,5 @@
-# Big Data Placement Notes
+# Big Data 
 
-This document is a **comprehensive Big Data revision guide** for placement preparation. It combines theory, commands, quick tables, and Q&A.
-
----
 
 ## 1. Big Data Fundamentals
 
