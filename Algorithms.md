@@ -1112,7 +1112,7 @@ def rat_in_maze(maze):
         return path
     return []
 ```
---- 
+
 ## 8. Advanced Graph Algorithms
 
 ### 8.1 Tarjan’s Algorithm (Strongly Connected Components)

@@ -722,6 +722,7 @@ Allow deadlocks, then detect and recover
 #### 4. Deadlock Ignorance (Ostrich Algorithm)
 Pretend deadlocks don't occur (used by many systems)
 
+---
 ## File Systems
 
 ### File Operations
@@ -761,6 +762,7 @@ Pretend deadlocks don't occur (used by many systems)
 - *ext4* (Linux): Journaling, large file support
 - *APFS* (macOS): Copy-on-write, snapshots
 - *ZFS*: Advanced features, data integrity
+---
 
 ## I/O Systems
 
